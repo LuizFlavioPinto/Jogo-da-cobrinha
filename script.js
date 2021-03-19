@@ -1,6 +1,6 @@
 const arena = document.getElementById('arena');
-    spx = randomNumber(15, 5) 
-    spy = randomNumber(15, 5) 
+    spx = randomNumber(13, 7) 
+    spy = randomNumber(13, 7) 
     apx = randomNumber()
     apy = randomNumber()
 
@@ -23,6 +23,14 @@ function eatFood () {
     if(spx == apx && spy == apy){
         apx = randomNumber()
         apy = randomNumber()
+        for(let i = 0; i < tail.length; i++){
+            if(apx == tail[i].x && apy == tail[i].y || apx == spx && apy == spy){
+                console.log('deu ruim')
+                apx = randomNumber()
+                apy = randomNumber()
+            }
+        }
+        
         tailTotal++
     } 
 }
@@ -69,8 +77,8 @@ function gameover () {
 function inGettingOutOfTheArena () {
     if(spx > 19 || spx < 0 || spy > 19 || spy < 0){
         lose = true
-        spx = randomNumber(15, 5)
-        spy = randomNumber(15, 5)
+        spx = randomNumber(13, 7)
+        spy = randomNumber(13, 7)
     }
 }
 
@@ -79,14 +87,13 @@ function randomNumber (max = 19,min = 0) {
     return generatedNumber
 }
 
-
 document.addEventListener('keydown', ((evt) =>{
     let command = evt.key.replace('Arrow', '')
 
-    if(command == "Right" || command == "d" || command == "D")direction = 'Right'
-    if(command == "Left" || command == "a" || command == "A")direction = 'Left'
-    if(command == "Up" || command == "w" || command == "W")direction = 'Up'
-    if(command == "Down" || command == "s" || command == "S")direction = 'Down'
+    if((command == "Right" || command == "d" || command == "D") && direction != 'Left')direction = 'Right'
+    if((command == "Left" || command == "a" || command == "A") && direction != 'Right')direction = 'Left'
+    if((command == "Up" || command == "w" || command == "W") && direction != 'Down')direction = 'Up'
+    if((command == "Down" || command == "s" || command == "S") && direction != 'Up')direction = 'Down'
 }))
 
 ////////////////////////////////////////////////////////////////////////////
