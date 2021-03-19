@@ -5,10 +5,10 @@ const arena = document.getElementById('arena');
     apy = randomNumber()
 
     snakeSpeed = 200
-    tailTotal = 1
-    tail = []
     direction = 'Right'
     lose = false
+    tailTotal = 1
+    tail = []
     
     ctx = arena.getContext('2d')
     
@@ -35,6 +35,7 @@ function build(){
 
     ctx.fillStyle = 'red'
     ctx.fillRect(apx * 30,apy * 30, 30, 30);
+    
     
     ctx.fillStyle = 'green'
     
@@ -75,7 +76,6 @@ function inGettingOutOfTheArena () {
 
 function randomNumber (max = 19,min = 0) {
     let generatedNumber = Math.floor((Math.random() * (max - min) + min))
-    console.log(generatedNumber)
     return generatedNumber
 }
 
