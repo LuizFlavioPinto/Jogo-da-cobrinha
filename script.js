@@ -1,4 +1,7 @@
 const arena = document.getElementById('arena');
+    counter = document.querySelector('.counter')
+    menu = document.querySelector('.menu')
+
     spx = randomNumber(13, 7) 
     spy = randomNumber(13, 7) 
     apx = randomNumber()
@@ -9,6 +12,10 @@ const arena = document.getElementById('arena');
     lose = false
     tailTotal = 1
     tail = []
+    command = null
+
+    paused = true
+    intervalId = null
     
     ctx = arena.getContext('2d')
     
@@ -19,13 +26,20 @@ function move () {
     if(direction == 'Down') spy++
 }
 
+function changeDirection() {
+    if((command == "Right" || command == "d" || command == "D") && direction != 'Left')direction = 'Right'
+    if((command == "Left" || command == "a" || command == "A") && direction != 'Right')direction = 'Left'
+    if((command == "Up" || command == "w" || command == "W") && direction != 'Down')direction = 'Up'
+    if((command == "Down" || command == "s" || command == "S") && direction != 'Up')direction = 'Down'
+}
+
 function eatFood () {
     if(spx == apx && spy == apy){
         apx = randomNumber()
         apy = randomNumber()
+
         for(let i = 0; i < tail.length; i++){
             if(apx == tail[i].x && apy == tail[i].y || apx == spx && apy == spy){
-                console.log('deu ruim')
                 apx = randomNumber()
                 apy = randomNumber()
             }
@@ -35,22 +49,26 @@ function eatFood () {
     } 
 }
 
+function updateCounter () {
+    counter.innerHTML = `<h1 class="counter">SCORE: ${tailTotal}</h1>` 
+}
+
 function build(){
     ctx.clearRect(0,0,arena.width,arena.height)
-
-    ctx.fillStyle = "black"
+    
+    ctx.fillStyle = "rgb(56, 172, 74)"
     ctx.fillRect(0, 0, arena.width, arena.height)
 
     ctx.fillStyle = 'red'
-    ctx.fillRect(apx * 30,apy * 30, 30, 30);
+    ctx.fillRect(apx * 25,apy * 25, 25, 25);
     
     
-    ctx.fillStyle = 'green'
+    ctx.fillStyle = 'blue'
     
     tail[tailTotal - 1] = { x: spx, y: spy}
     
     for(let i = 0; i < tail.length; i++){
-        ctx.fillRect(tail[i].x * 30, tail[i].y * 30, 30, 30)
+        ctx.fillRect(tail[i].x * 25, tail[i].y * 25, 25, 25)
     }
 
     for(let i = 0; i < tail.length - 1; i++){
@@ -59,19 +77,9 @@ function build(){
         }else tail[i] = tail[i+1]   
     }
     
-    ctx.fillRect(spx * 30, spy * 30, 30, 30)
+    ctx.fillRect(spx * 25, spy * 25, 25, 25)
 }
 
-function gameover () {
-    inGettingOutOfTheArena()
-
-    if(lose == true){
-        lose = false
-        alert('GAMEOVER')
-        tailTotal = 1
-        tail = []
-    }  
-}
 
 
 function inGettingOutOfTheArena () {
@@ -87,24 +95,53 @@ function randomNumber (max = 19,min = 0) {
     return generatedNumber
 }
 
-document.addEventListener('keydown', ((evt) =>{
-    let command = evt.key.replace('Arrow', '')
+function changeVisibility () {
+    if(paused == false){
+        clearInterval(intervalId)
+        paused = true
+        menu.style.display = 'flex'
+    }
+}
 
-    if((command == "Right" || command == "d" || command == "D") && direction != 'Left')direction = 'Right'
-    if((command == "Left" || command == "a" || command == "A") && direction != 'Right')direction = 'Left'
-    if((command == "Up" || command == "w" || command == "W") && direction != 'Down')direction = 'Up'
-    if((command == "Down" || command == "s" || command == "S") && direction != 'Up')direction = 'Down'
-}))
+function gameover () {
+    inGettingOutOfTheArena()
+
+    if(lose == true){
+        lose = false
+        tailTotal = 1
+        tail = []
+        changeVisibility()
+    }  
+}
+
+document.addEventListener("visibilitychange", changeVisibility, false);
+
+document.addEventListener('keydown', ((evt) => command = evt.key.replace('Arrow', '')))
 
 ////////////////////////////////////////////////////////////////////////////
 
-setInterval(() => {
-    move()
-    eatFood()
-    build()
-    gameover()
+function playPause() {
+    paused = paused == true? false: true
 
-}, snakeSpeed);
+    if(paused == false){
+
+        intervalId = setInterval(() => {
+            changeDirection()
+            move()
+            eatFood()
+            updateCounter()
+            build()
+            gameover()
+        }, snakeSpeed);
+
+        menu.style.display = 'none'
+
+    } else {
+        clearInterval(intervalId)
+        menu.style.display = 'flex'
+    }
+
+}
 
 
 build()
